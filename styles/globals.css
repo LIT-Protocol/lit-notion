@@ -1,0 +1,5 @@
+#eg li:hover{
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
