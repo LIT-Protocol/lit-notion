@@ -11,8 +11,6 @@ import { LitLogo } from "@websaam/ui";
 const litNodeClient = new LitJsSdk.LitNodeClient()
 litNodeClient.connect()
 
-
-
 const notionPage = () => {
 
     // -- prepare
@@ -26,6 +24,7 @@ const notionPage = () => {
     const [page, setPage] = useState(null);
     const [error, setError] = useState(null);
     const [humanised, setHumanised] = useState(null);
+    const [litLoaded, setLitLoaded] = useState(false);
 
     // -- mounted
     useEffect(() => {
@@ -35,8 +34,19 @@ const notionPage = () => {
             return;
         }
 
+        if( ! litNodeClient.ready && ! litLoaded ){
+            document.addEventListener('lit-ready', (e) => {
+                console.log("Lit Ready?:", litNodeClient.ready);
+                if(litNodeClient.ready){
+                    setLitLoaded(true);
+                    run();
+                }
+            })
+        }
+
         // -- method
         const run = async () => {
+
             const tempAlert = window.alert;
             window.alert = () => {};
             console.log(">> run");
@@ -66,47 +76,43 @@ const notionPage = () => {
             console.log(">> chain:", chain);
             console.log(">> accessControlConditions:", accessControlConditions);
             console.log(">> resourceId:", resourceId);
+            
+            let jwt;
 
-            setTimeout(async () => {
-                let jwt;
-
-                try{
-                    jwt = await litNodeClient.getSignedToken({ 
-                        accessControlConditions, 
-                        chain, 
-                        authSig, 
-                        resourceId 
-                    })
-                    console.log(">> JWT:", jwt);
-                }catch(e){
-                    console.error("Failed to fetch JWT");
-                    setError(`You are not authorised to access to this content, you must "${_humanised}"`);
-                    window.alert = tempAlert;
-                    return;
-                }
-
-
-                const data = (await (await fetch(publicRuntimeConfig.BACKEND_API + '/notion/' + id, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ jwt })
-                })).json());
-                
-                console.log("Fetched: ", data);
-                
-                if( data.error ){
-                    console.error("Failed to fetch notion page id:", id);
-                    setError("Notion page doesn't exist")
-                    return;
-                }
-    
-                setPage(data.recordMap)
+            try{
+                jwt = await litNodeClient.getSignedToken({ 
+                    accessControlConditions, 
+                    chain, 
+                    authSig, 
+                    resourceId 
+                })
+                console.log(">> JWT:", jwt);
+            }catch(e){
+                console.error("Failed to fetch JWT");
+                setError(`You are not authorised to access to this content, you must "${_humanised}"`);
                 window.alert = tempAlert;
-            }, 500)
+                return;
+            }
 
+            const data2 = (await (await fetch(publicRuntimeConfig.BACKEND_API + '/notion/' + id, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ jwt })
+            })).json());
+            
+            console.log("Fetched: ", data2);
+            
+            if( data2.error ){
+                console.error("Failed to fetch notion page id:", id);
+                setError("Notion page doesn't exist")
+                return;
+            }
+
+            setPage(data2.recordMap)
+            window.alert = tempAlert;
 
         }
-        run();
+        // run();
     }, [id])
 
     return (
