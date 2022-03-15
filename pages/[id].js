@@ -20,7 +20,6 @@ const notionPage = () => {
     const [page, setPage] = useState(null);
     const [error, setError] = useState(null);
     const [humanised, setHumanised] = useState(null);
-    const [litLoaded, setLitLoaded] = useState(false);
 
     // -- mounted
     useEffect(() => {
@@ -38,7 +37,7 @@ const notionPage = () => {
             console.log(">> run");
 
             await litNodeClient.connect();
-
+            
             // -- prepare
             const chain = 'ethereum';
             const authSig = await LitJsSdk.checkAndSignAuthMessage({chain})
