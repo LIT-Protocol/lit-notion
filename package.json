@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@websaam/ui": "^0.0.23",
     "lit-js-sdk": "^1.1.143",
     "next": "12.1.0",
     "notion-client": "^4.16.1",
@@ -19,7 +20,7 @@
     "uuidv4": "^6.2.12"
   },
   "devDependencies": {
-    "eslint": "8.9.0",
+    "eslint": "8.11.0",
     "eslint-config-next": "12.1.0"
   }
 }

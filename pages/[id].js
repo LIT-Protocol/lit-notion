@@ -6,6 +6,7 @@ import getConfig from 'next/config'
 const { publicRuntimeConfig } = getConfig()
 
 import LitJsSdk from 'lit-js-sdk';
+import { LitLogo } from "@websaam/ui";
 
 const litNodeClient = new LitJsSdk.LitNodeClient()
 litNodeClient.connect()
@@ -47,6 +48,13 @@ const notionPage = () => {
             const res = await fetch(api);
             const data = await res.json();
             console.log("Fetched: ", data);
+
+            if(data.error){
+                console.error(data.error);
+                setError(data.error);
+                window.alert = tempAlert;
+                return;
+            }
 
             const accessControlConditions = data.accessControlConditions;
             const resourceId = data.resourceId;
@@ -104,8 +112,18 @@ const notionPage = () => {
     return (
         <>
             {
-                error ? error
-                : (!id || page == null) ? 'Loading...' 
+                error ? <div className="wrapper flex">
+                            <div className="flex m-auto">
+                                <LitLogo className="m-auto"
+                                title={`Error 500`}
+                                subtitle={error}/>
+                            </div>
+                        </div> 
+                : (!id || page == null) ? <div className="wrapper flex">
+                        <div className="flex m-auto">
+                            <LitLogo className="m-auto" subtitle="Loading..."/>
+                        </div>
+                    </div> 
                     : 
                     <>
                         <NotionRenderer recordMap={page} fullPage={true} darkMode={false} />
