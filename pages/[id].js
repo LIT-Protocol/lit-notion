@@ -9,7 +9,6 @@ import LitJsSdk from 'lit-js-sdk';
 import { LitLogo } from "@websaam/ui";
 
 const litNodeClient = new LitJsSdk.LitNodeClient()
-litNodeClient.connect()
 
 const notionPage = () => {
 
@@ -18,9 +17,6 @@ const notionPage = () => {
     const { id } = router.query;
 
     // -- state
-    // const [resourceId, setResourceId] = useState(null);
-    // const [accessControlConditions, setAccessControlConditions] = useState(null);
-    // const [authSig, setAuthSig] = useState(null);
     const [page, setPage] = useState(null);
     const [error, setError] = useState(null);
     const [humanised, setHumanised] = useState(null);
@@ -34,22 +30,14 @@ const notionPage = () => {
             return;
         }
 
-        if( ! litNodeClient.ready && ! litLoaded ){
-            document.addEventListener('lit-ready', (e) => {
-                console.log("Lit Ready?:", litNodeClient.ready);
-                if(litNodeClient.ready){
-                    setLitLoaded(true);
-                    run();
-                }
-            })
-        }
-
         // -- method
         const run = async () => {
 
             const tempAlert = window.alert;
             window.alert = () => {};
             console.log(">> run");
+
+            await litNodeClient.connect();
 
             // -- prepare
             const chain = 'ethereum';
@@ -112,7 +100,7 @@ const notionPage = () => {
             window.alert = tempAlert;
 
         }
-        // run();
+        run();
     }, [id])
 
     return (
