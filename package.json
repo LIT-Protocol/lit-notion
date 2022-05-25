@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@websaam/ui": "^0.0.23",
-    "lit-js-sdk": "^1.1.143",
+    "lit-js-sdk": "^1.1.179",
     "next": "12.1.0",
     "notion-client": "^4.16.1",
     "react": "17.0.2",
